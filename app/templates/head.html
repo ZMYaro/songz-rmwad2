@@ -11,14 +11,7 @@
 		<link rel="stylesheet" type="text/css" href="/static/styles/material-widgets.css" />
 		<link rel="stylesheet" type="text/css" href="/static/styles/material-depth.css" />
 		<link rel="stylesheet" type="text/css" href="/static/styles/layout.css" />
-		{% if stylesheet %}
-			<link rel="stylesheet" type="text/css" href="/static/styles/{{ stylesheet }}.css" />
-		{% endif %}
-		<script type="text/javascript">
-			function hideMessage() {
-				document.getElementById("message").style.display = "none";
-			}
-		</script>
+		<script type="text/javascript" src="/static/scripts/xhr.js"></script>
 	</head>
 	<body>
 		<header id="header" class="appBar toolbar z2">
