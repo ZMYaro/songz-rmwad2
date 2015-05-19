@@ -91,7 +91,7 @@ function createPlaylist() {
 		return;
 	}
 	var postData = 'name=' + encodeURIComponent(listName);
-	request('POST', '/api/add/playlist', postData, addPlaylistButton, function () {
+	request('POST', '/api/playlists', postData, addPlaylistButton, function () {
 		alert('Your new playlist could not be created.  Please try again later.');
 	});
 }
@@ -117,7 +117,7 @@ function addSong() {
 		'&title=' + encodeURIComponent(songTitle) +
 		'&artist=' + encodeURIComponent(songArtist) +
 		'&album=' + encodeURIComponent(songAlbum);
-	request('POST', '/api/add/song', postData, addSongItem, function () {
+	request('POST', '/api/songs', postData, addSongItem, function () {
 		alert('Your song could not be added.  Please try again later.');
 	});
 }

@@ -20,8 +20,9 @@ def errorOut(response, code):
 	response.out.write('[]')
 	response.set_status(code)
 
-class PlaylistsHandler(webapp.RequestHandler):
+class PlaylistHandler(webapp.RequestHandler):
 	def get(self):
+		""" Get a user's playlists. """
 		
 		user = users.get_current_user()
 		
@@ -41,49 +42,10 @@ class PlaylistsHandler(webapp.RequestHandler):
 		# Convert the dictionaries to JSON and output it.
 		self.response.headers['Content-Type'] = 'application/json'
 		self.response.out.write(json.dumps(playlistData))
-
-class SongsHandler(webapp.RequestHandler):
-	def get(self):
-		# Ensure a list was requested.
-		listId = self.request.get('list')
-		if not listId:
-			errorOut(self.response, 404)
-			return
-		
-		# Ensure the user is signed in.
-		user = users.get_current_user()
-		if not user:
-			errorOut(self.response, 401)
-			return
-		
-		# Ensure the playlist exists.
-		playlist = Playlist.gql('WHERE playlistId = :1', listId).get()
-		if not playlist:
-			errorOut(self.response, 404)
-			return
-		
-		# Ensure the user has permission to access the playlist.
-		playlistUserMap = PlaylistUser.gql('WHERE user = :1 AND playlistId = :2', user, listId).get()
-		if not playlistUserMap:
-			errorOut(self.response, 403)
-			return
-		
-		songData = []
-		listSongs = PlaylistItem.gql('WHERE playlistId = :1', listId).order(PlaylistItem.timeAdded).fetch(limit=None)
-		for song in listSongs:
-			songData.append({
-				'songId': song.songId,
-				'title': song.title,
-				'album': song.album,
-				'artist': song.artist
-			})
-		
-		# Convert the dictionaries to JSON and output it.
-		self.response.headers['Content-Type'] = 'application/json'
-		self.response.out.write(json.dumps(songData))
-
-class PlaylistMaker(webapp.RequestHandler):
+	
 	def post(self):
+		""" Create a new playlist. """
+		
 		listName = self.request.get('name')
 		
 		if not listName:
@@ -123,8 +85,51 @@ class PlaylistMaker(webapp.RequestHandler):
 			'name': listName
 		}))
 
-class SongMaker(webapp.RequestHandler):
+class SongHandler(webapp.RequestHandler):
+	def get(self):
+		""" Get the songs in a given playlist. """
+		
+		# Ensure a list was requested.
+		listId = self.request.get('list')
+		if not listId:
+			errorOut(self.response, 404)
+			return
+		
+		# Ensure the user is signed in.
+		user = users.get_current_user()
+		if not user:
+			errorOut(self.response, 401)
+			return
+		
+		# Ensure the playlist exists.
+		playlist = Playlist.gql('WHERE playlistId = :1', listId).get()
+		if not playlist:
+			errorOut(self.response, 404)
+			return
+		
+		# Ensure the user has permission to access the playlist.
+		playlistUserMap = PlaylistUser.gql('WHERE user = :1 AND playlistId = :2', user, listId).get()
+		if not playlistUserMap:
+			errorOut(self.response, 403)
+			return
+		
+		songData = []
+		listSongs = PlaylistItem.gql('WHERE playlistId = :1', listId).order(PlaylistItem.timeAdded).fetch(limit=None)
+		for song in listSongs:
+			songData.append({
+				'songId': song.songId,
+				'title': song.title,
+				'album': song.album,
+				'artist': song.artist
+			})
+		
+		# Convert the dictionaries to JSON and output it.
+		self.response.headers['Content-Type'] = 'application/json'
+		self.response.out.write(json.dumps(songData))
+	
 	def post(self):
+		""" Add a new song to a playlist. """
+		
 		# Ensure the necessary parameters were passed.
 		listId = self.request.get('list')
 		if not list:
@@ -180,10 +185,8 @@ class OtherPage(webapp.RequestHandler):
 	def get(self):
 		errorOut(self.response, 404)
 
-site = webapp.WSGIApplication([('/api/playlists', PlaylistsHandler),
-                               ('/api/songs', SongsHandler),
-							   ('/api/add/playlist', PlaylistMaker),
-							   ('/api/add/song', SongMaker),
+site = webapp.WSGIApplication([('/api/playlists', PlaylistHandler),
+							   ('/api/songs', SongHandler),
                                ('/.*', OtherPage)],
                               debug=True)
 
