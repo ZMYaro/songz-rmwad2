@@ -42,6 +42,11 @@ function addPlaylistButton(listData) {
  * @param {MouseEvent} e
  */
 function handlePlaylistButtonClick(e) {
+	document.getElementById('listTitle').innerText =
+		document.getElementById('listTitle').textContent = (this.innerText || this.textContent);
+	
+	document.getElementById('songList').innerHTML = '';
+	
 	loadSongs(this.dataset.playlistId);
 }
 
@@ -50,8 +55,16 @@ function handlePlaylistButtonClick(e) {
  * @param {String} listId - The ID of the playlist to load
  */
 function loadSongs(listId) {
-	// TODO: Implement this.
-	alert('This has not yet been implemented.');
+	request('GET', '/api/songs?list=' + listId, null, populateSongsPane, function () {
+		alert('That playlist could not be loaded.  Please try again later.');
+	});
+}
+
+/**
+ * Add a playlist's songs to the songs pane.
+ */
+function populateSongsPane(songsData) {
+	
 }
 
 /**

@@ -41,34 +41,34 @@ class PlaylistsHandler(webapp.RequestHandler):
 		self.response.headers['Content-Type'] = 'application/json'
 		self.response.out.write(json.dumps(playlistData))
 
-class PlaylistHandler(webapp.RequestHandler):
-	def get(self, listId):
-		self.response.headers['Content-Type'] = 'application/json'
-		
+class SongsHandler(webapp.RequestHandler):
+	def get(self):
+		# Ensure a list was requested.
+		listId = self.request.get('list')
 		if not listId:
 			errorOut(self.response, 404)
 			return
 		
+		# Ensure the user is signed in.
 		user = users.get_current_user()
-		
 		if not user:
 			errorOut(self.response, 401)
 			return
 		
+		# Ensure the playlist exists.
 		playlist = Playlist.gql('WHERE playlistId = :1', listId).get()
-		
 		if not playlist:
 			errorOut(self.response, 404)
 			return
 		
+		# Ensure the user has permission to access the playlist.
 		playlistUserMap = PlaylistUser.gql('WHERE user = :1 AND playlistId = :2', user, listId).get()
-		
 		if not playlistUserMap:
 			errorOut(self.response, 403)
 			return
 		
 		songData = []
-		listSongs = PlaylistItem.gql('WHERE playlistId = :1', listId).order('timeAdded').fetch(limit=None)
+		listSongs = PlaylistItem.gql('WHERE playlistId = :1', listId).order(PlaylistItem.timeAdded).fetch(limit=None)
 		for song in listSongs:
 			songData.append({
 				'title': song.title,
@@ -78,7 +78,7 @@ class PlaylistHandler(webapp.RequestHandler):
 		
 		# Convert the dictionaries to JSON and output it.
 		self.response.headers['Content-Type'] = 'application/json'
-		self.response.out.write(json.dumps(playlistData))
+		self.response.out.write(json.dumps(songData))
 
 class PlaylistMaker(webapp.RequestHandler):
 	def post(self):
@@ -131,7 +131,7 @@ class OtherPage(webapp.RequestHandler):
 		errorOut(self.response, 404)
 
 site = webapp.WSGIApplication([('/api/playlists', PlaylistsHandler),
-                               ('/api/playlist/(.*)', PlaylistHandler),
+                               ('/api/songs', SongsHandler),
 							   ('/api/add/playlist', PlaylistMaker),
 							   ('/api/add/song', SongMaker),
                                ('/.*', OtherPage)],
