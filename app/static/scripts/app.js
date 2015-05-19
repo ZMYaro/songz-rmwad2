@@ -2,6 +2,7 @@
 
 function init() {
 	document.getElementById('newListButton').onclick = createPlaylist;
+	document.getElementById('newSongButton').onclick = addSong;
 	
 	loadLists();
 }
@@ -47,6 +48,9 @@ function handlePlaylistButtonClick(e) {
 	
 	document.getElementById('songList').innerHTML = '';
 	
+	document.getElementById('newSongButton').style.display = 'none';
+	document.getElementById('newSongButton').dataset.playlistId = this.dataset.playlistId;
+	
 	loadSongs(this.dataset.playlistId);
 }
 
@@ -65,6 +69,7 @@ function loadSongs(listId) {
  */
 function populateSongsPane(songsData) {
 	songsData.forEach(addSongItem);
+	document.getElementById('newSongButton').style.display = null;
 }
 
 function addSongItem(songData) {
@@ -88,6 +93,32 @@ function createPlaylist() {
 	var postData = 'name=' + encodeURIComponent(listName);
 	request('POST', '/api/add/playlist', postData, addPlaylistButton, function () {
 		alert('Your new playlist could not be created.  Please try again later.');
+	});
+}
+
+/**
+ * Add a song to the current playlist when the button is clicked.
+ */
+function addSong() {
+	var songTitle = prompt('Please enter the title of the song.');
+	if (!songTitle) {
+		return;
+	}
+	var songArtist = prompt('Please enter the artist of the song.');
+	if (typeof songArtist !== 'string') {
+		return;
+	}
+	var songAlbum = prompt('Please enter the album of the song.');
+	if (typeof songAlbum !== 'string') {
+		return;
+	}
+	
+	var postData = 'list=' + this.dataset.playlistId +
+		'&title=' + encodeURIComponent(songTitle) +
+		'&artist=' + encodeURIComponent(songArtist) +
+		'&album=' + encodeURIComponent(songAlbum);
+	request('POST', '/api/add/song', postData, addSongItem, function () {
+		alert('Your song could not be added.  Please try again later.');
 	});
 }
 

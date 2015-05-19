@@ -6,6 +6,7 @@ import json
 import os
 
 from uuid import uuid4
+from datetime import datetime
 
 from google.appengine.api import users
 from google.appengine.ext import webapp
@@ -102,7 +103,7 @@ class PlaylistMaker(webapp.RequestHandler):
 			if not Playlist.gql('WHERE playlistId = :1', listId).get():
 				break
 		
-		# Create and store a the playlist.
+		# Create and store the playlist.
 		newList = Playlist()
 		newList.playlistId = listId
 		newList.name = listName
@@ -124,8 +125,56 @@ class PlaylistMaker(webapp.RequestHandler):
 
 class SongMaker(webapp.RequestHandler):
 	def post(self):
-		# TODO: Implement this.
-		errorOut(self.response, 404)
+		# Ensure the necessary parameters were passed.
+		listId = self.request.get('list')
+		if not list:
+			errorOut(self.response, 400)
+			return
+		
+		songTitle = self.request.get('title')
+		if not songTitle:
+			errorOut(self.response, 400)
+			return
+		
+		songArtist = self.request.get('artist') or ''
+		songAlbum = self.request.get('album') or ''
+		
+		user = users.get_current_user()
+		if not user:
+			errorOut(self.response, 401)
+			return
+		
+		# Ensure the user has permission to edit the playlist.
+		playlistUserMap = PlaylistUser.gql('WHERE user = :1 AND playlistId = :2', user, listId).get()
+		if not playlistUserMap:
+			errorOut(self.response, 403)
+			return
+		
+		# Generate a unique ID for the new song.
+		songId = ''
+		while True:
+			songId = uuid4().hex
+			if not PlaylistItem.gql('WHERE songId = :1', songId).get():
+				break
+		
+		# Create and store the song.
+		newSong = PlaylistItem()
+		newSong.songId = songId
+		newSong.playlistId = listId
+		newSong.timeAdded = datetime.now()
+		newSong.title = songTitle
+		newSong.artist = songArtist
+		newSong.album = songAlbum
+		newSong.put()
+		
+		# Output the playlist's metadata as JSON.
+		self.response.headers['Content-Type'] = 'application/json'
+		self.response.out.write(json.dumps({
+			'songId': songId,
+			'title': songTitle,
+			'artist': songArtist,
+			'album': songAlbum
+		}))
 		
 class OtherPage(webapp.RequestHandler):
 	def get(self):

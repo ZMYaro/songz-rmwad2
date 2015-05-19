@@ -12,8 +12,8 @@ class PlaylistItem(ndb.Model):
 	playlistId = ndb.StringProperty()
 	timeAdded = ndb.DateTimeProperty()
 	title = ndb.StringProperty()
-	album = ndb.StringProperty()
 	artist = ndb.StringProperty()
+	album = ndb.StringProperty()
 
 class PlaylistUser(ndb.Model):
 	playlistId = ndb.StringProperty()
