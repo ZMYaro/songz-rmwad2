@@ -18,8 +18,6 @@ body {
 	margin: 0;
 	padding: 24px;
 	padding-top: 88px; /* 64px action bar + 24px padding */
-	padding-bottom: 104px;
-	padding-left: 232px; /* 208px left bar + 24px padding */
 	
 	background-color: #EEEEEE;
 }
