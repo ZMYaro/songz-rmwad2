@@ -10,17 +10,7 @@ function init() {
  * Load the user's playlists.
  */
 function loadLists() {
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', '/api/playlists', true);
-	xhr.onreadystatechange = function () {
-		if (xhr.readyState === 4) {
-			if (xhr.status === 200) {
-				// Parse and pass on the response data.
-				populateListsPane(JSON.parse(xhr.responseText));
-			}
-		}
-	};
-	xhr.send();
+	request('GET', '/api/playlists', null, populateListsPane);
 }
 
 /**
@@ -72,19 +62,10 @@ function createPlaylist() {
 	if (!listName) {
 		return;
 	}
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/api/add/playlist', true);
-	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	xhr.onreadystatechange = function () {
-		if (xhr.readyState === 4) {
-			if (xhr.status === 200) {
-				addPlaylistButton(JSON.parse(xhr.responseText));
-			} else {
-				alert('Your new playlist could not be created.  Please try again later.');
-			}
-		}
-	};
-	xhr.send('name=' + encodeURIComponent(listName));
+	var postData = 'name=' + encodeURIComponent(listName);
+	request('POST', '/api/add/playlist', postData, addPlaylistButton, function () {
+		alert('Your new playlist could not be created.  Please try again later.');
+	});
 }
 
 init();
