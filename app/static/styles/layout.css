@@ -57,13 +57,13 @@ body {
 		margin: -2px 14px;
 		vertical-align: baseline;
 	}
-#browsePane {
+#listsPane {
 	display: block;
 	position: fixed;
 	left: 0;
+	width: 256px;
 	top: 64px;
-	right: 256px;
-	bottom: 64px;
+	bottom: 0;
 	
 	overflow: auto;
 	
@@ -72,13 +72,13 @@ body {
 	z-index: 1;
 }
 
-#playlistPane {
+#songsPane {
 	display: block;
 	position: fixed;
+	left: 256px;
 	right: 0;
-	width: 256px;
-	bottom: 64px;
 	top: 64px;
+	bottom: 0;
 	padding: 8px;
 	
 	overflow: auto;
@@ -88,7 +88,7 @@ body {
 	z-index: 2;
 }
 
-#controlsPane {
+/*#controlsPane {
 	display: block;
 	position: fixed;
 	left: 0;
@@ -103,11 +103,4 @@ body {
 	text-align: center;
 	
 	z-index: 2;
-}
-
-#playlist {
-
-}
-	#playlist li {
-		
-	}
+}*/
