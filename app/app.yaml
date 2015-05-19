@@ -1,4 +1,4 @@
-application: songz
+application: songz-rmwad2
 version: v1
 runtime: python27
 api_version: 1
