@@ -71,6 +71,7 @@ class SongsHandler(webapp.RequestHandler):
 		listSongs = PlaylistItem.gql('WHERE playlistId = :1', listId).order(PlaylistItem.timeAdded).fetch(limit=None)
 		for song in listSongs:
 			songData.append({
+				'songId': song.songId,
 				'title': song.title,
 				'album': song.album,
 				'artist': song.artist

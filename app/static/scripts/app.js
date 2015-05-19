@@ -64,7 +64,17 @@ function loadSongs(listId) {
  * Add a playlist's songs to the songs pane.
  */
 function populateSongsPane(songsData) {
-	
+	songsData.forEach(addSongItem);
+}
+
+function addSongItem(songData) {
+	var songList = document.getElementById('songList'),
+		listItem = document.createElement('li');
+	listItem.innerText = listItem.textContent =
+		songData.title + ' - ' + songData.artist + ' - ' + songData.album;
+	listItem.id = 'song-' + songData.songId;
+	listItem.dataset.songId = songData.songId;
+	songList.appendChild(listItem);
 }
 
 /**
