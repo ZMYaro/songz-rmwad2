@@ -5,6 +5,8 @@ import cgi
 import json
 import os
 
+from uuid import uuid4
+
 from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
@@ -23,7 +25,7 @@ class PlaylistsHandler(webapp.RequestHandler):
 		user = users.get_current_user()
 		
 		if not user:
-			errorOut(self.response, 403)
+			errorOut(self.response, 401)
 			return
 		
 		playlistData = []
@@ -50,7 +52,7 @@ class PlaylistHandler(webapp.RequestHandler):
 		user = users.get_current_user()
 		
 		if not user:
-			errorOut(self.response, 403)
+			errorOut(self.response, 401)
 			return
 		
 		playlist = Playlist.gql('WHERE playlistId = :1', listId).get()
@@ -78,12 +80,60 @@ class PlaylistHandler(webapp.RequestHandler):
 		self.response.headers['Content-Type'] = 'application/json'
 		self.response.out.write(json.dumps(playlistData))
 
+class PlaylistMaker(webapp.RequestHandler):
+	def post(self):
+		listName = self.request.get('name')
+		
+		if not listName:
+			errorOut(self.response, 400)
+			return
+		
+		user = users.get_current_user()
+		
+		if not user:
+			errorOut(self.response, 401)
+			return
+		
+		# Generate a unique ID for the new list.
+		listId = ''
+		while True:
+			listId = uuid4().hex
+			if not Playlist.gql('WHERE playlistId = :1', listId).get():
+				break
+		
+		# Create and store a the playlist.
+		newList = Playlist()
+		newList.playlistId = listId
+		newList.name = listName
+		newList.put()
+		
+		# Identify the user as the owner of that playlist.
+		playlistUserMap = PlaylistUser()
+		playlistUserMap.playlistId = listId
+		playlistUserMap.user = user
+		playlistUserMap.owner = True
+		playlistUserMap.put()
+		
+		# Output the playlist's metadata as JSON.
+		self.response.headers['Content-Type'] = 'application/json'
+		self.response.out.write(json.dumps({
+			'playlistId': listId,
+			'name': listName
+		}))
+
+class SongMaker(webapp.RequestHandler):
+	def post(self):
+		# TODO: Implement this.
+		errorOut(self.response, 404)
+		
 class OtherPage(webapp.RequestHandler):
 	def get(self):
 		errorOut(self.response, 404)
 
 site = webapp.WSGIApplication([('/api/playlists', PlaylistsHandler),
                                ('/api/playlist/(.*)', PlaylistHandler),
+							   ('/api/add/playlist', PlaylistMaker),
+							   ('/api/add/song', SongMaker),
                                ('/.*', OtherPage)],
                               debug=True)
 

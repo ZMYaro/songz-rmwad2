@@ -1,6 +1,8 @@
 'use strict';
 
 function init() {
+	document.getElementById('newListButton').onclick = createPlaylist;
+	
 	loadLists();
 }
 
@@ -26,15 +28,23 @@ function loadLists() {
  * @param {Array<Object>} listsData - The user's playlists
  */
 function populateListsPane(listsData) {
-	var listList = document.getElementById('listList');
-	listsData.forEach(function (list) {
-		var listButton = document.createElement('button');
-		listButton.innerText = listButton.textContent = list.name;
-		listButton.id = 'playlist-button-' + list.playlistId;
-		listButton.dataset.playlistId = list.playlistId;
-		listButton.onclick = handlePlaylistButtonClick;
-		listList.appendChild(listButton);
-	});
+	listsData.forEach(addPlaylistButton);
+}
+
+/**
+ * Create a button in the list pane for a button.
+ * @param {Object} listData - The playlist's metadata
+ */
+function addPlaylistButton(listData) {
+	var listList = document.getElementById('listList'),
+		listItem = document.createElement('li'),
+		listButton = document.createElement('button');
+	listButton.innerText = listButton.textContent = listData.name;
+	listButton.id = 'playlist-button-' + listData.playlistId;
+	listButton.dataset.playlistId = listData.playlistId;
+	listButton.onclick = handlePlaylistButtonClick;
+	listItem.appendChild(listButton);
+	listList.appendChild(listItem);
 }
 
 /**
@@ -52,6 +62,29 @@ function handlePlaylistButtonClick(e) {
 function loadSongs(listId) {
 	// TODO: Implement this.
 	alert('This has not yet been implemented.');
+}
+
+/**
+ * Create a new playlist at the user's request.
+ */
+function createPlaylist() {
+	var listName = prompt('Please enter a name for the new playlist.');
+	if (!listName) {
+		return;
+	}
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/api/add/playlist', true);
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState === 4) {
+			if (xhr.status === 200) {
+				addPlaylistButton(JSON.parse(xhr.responseText));
+			} else {
+				alert('Your new playlist could not be created.  Please try again later.');
+			}
+		}
+	};
+	xhr.send('name=' + encodeURIComponent(listName));
 }
 
 init();
