@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+		<meta name="viewport" content="initial-scale=1" />
+		<meta name="description" content="Build playlists with your friends!" />
+		<title>{% if title %}{{ title }} - {% endif %}SongZ</title>
+<!--		<link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon.ico" />-->
+		<link rel="stylesheet" type="text/css" href="/static/styles/material-elements.css" />
+		<link rel="stylesheet" type="text/css" href="/static/styles/material-widgets.css" />
+		<link rel="stylesheet" type="text/css" href="/static/styles/material-depth.css" />
+		<link rel="stylesheet" type="text/css" href="/static/styles/layout.css" />
+		{% if stylesheet %}
+			<link rel="stylesheet" type="text/css" href="/static/styles/{{ stylesheet }}.css" />
+		{% endif %}
+		<script type="text/javascript">
+			function hideMessage() {
+				document.getElementById("message").style.display = "none";
+			}
+		</script>
+	</head>
+	<body>
+		<header id="header" class="appBar toolbar z2">
+			{% if signOutURL %}
+				<a href="{{ signOutURL }}" role="button" title="Sign out" style="float: right;">
+					<img src="/static/images/icons/signout.png" alt="Sign out" />
+				</a>
+			{% endif %}
+			<h1>SongZ</h1>
+		</header>

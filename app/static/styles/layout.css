@@ -1,0 +1,113 @@
+/* This stylesheet is for the core parts of the Wave Extensions
+ * Gallery UI layout and their basic appearances.
+ */
+
+@charset "UTF-8";
+
+html {
+	height:100%;
+}
+html * {
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+	        box-sizing: border-box;
+}
+body {
+	min-height: 100%;
+	position: relative;
+	margin: 0;
+	padding: 24px;
+	padding-top: 88px; /* 64px action bar + 24px padding */
+	padding-bottom: 104px;
+	padding-left: 232px; /* 208px left bar + 24px padding */
+	
+	background-color: #EEEEEE;
+}
+
+.toolbar > button > img,
+.toolbar > *[role="button"] > img {
+	width: 32px;
+	height: 32px;
+}
+
+#header {
+	display: block;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 64px;
+	padding: 16px 24px;
+	
+	white-space: nowrap;
+	
+	background-color: #ff5722;
+	color: white;
+	
+	/* Keep the header on top of other fixed elements */
+	z-index: 3;
+}
+	#header h1 {
+		display: inline-block;
+		margin: 0 16px;
+		font-size: 24px;
+		font-weight: normal;
+	}
+	#header form {
+		margin: -2px 14px;
+		vertical-align: baseline;
+	}
+#browsePane {
+	display: block;
+	position: fixed;
+	left: 0;
+	top: 64px;
+	right: 256px;
+	bottom: 64px;
+	
+	overflow: auto;
+	
+	background-color: white;
+	
+	z-index: 1;
+}
+
+#playlistPane {
+	display: block;
+	position: fixed;
+	right: 0;
+	width: 256px;
+	bottom: 64px;
+	top: 64px;
+	padding: 8px;
+	
+	overflow: auto;
+	
+	background-color: white;
+	
+	z-index: 2;
+}
+
+#controlsPane {
+	display: block;
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 64px;
+	
+	overflow: auto;
+	
+	background-color: white;
+	
+	text-align: center;
+	
+	z-index: 2;
+}
+
+#playlist {
+
+}
+	#playlist li {
+		
+	}
