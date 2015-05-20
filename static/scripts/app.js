@@ -48,10 +48,12 @@ function handlePlaylistButtonClick(e) {
 	
 	document.getElementById('songList').innerHTML = '';
 	
-	document.getElementById('newSongButton').style.display = 'none';
+	document.getElementById('songsPane').style.display = 'none';
+	document.getElementById('usersPane').style.display = 'none';
 	document.getElementById('newSongButton').dataset.playlistId = this.dataset.playlistId;
 	
 	loadSongs(this.dataset.playlistId);
+	loadUsers(this.dataset.playlistId);
 }
 
 /**
@@ -70,7 +72,7 @@ function loadSongs(listId) {
  */
 function populateSongsPane(songsData) {
 	songsData.forEach(addSongItem);
-	document.getElementById('newSongButton').style.display = null;
+	document.getElementById('songsPane').style.display = null;
 }
 
 /**
@@ -101,6 +103,7 @@ function loadUsers(listId) {
  */
 function populateUsersPane(usersData) {
 	// TODO: Implement this.
+	document.getElementById('usersPane').style.display = null;
 }
 
 
