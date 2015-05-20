@@ -31,10 +31,10 @@ class RobotsTxt(webapp.RequestHandler):
 		self.response.headers['Content-Type'] = 'text/plain'
 		self.response.out.write('User-agent: *\nDisallow: /')
 
-#class FaviconHandler(webapp.RequestHandler):
-#	def get(self):
-#		self.response.set_status(301)
-#		self.redirect('/static/images/favicon.ico')
+class FaviconHandler(webapp.RequestHandler):
+	def get(self):
+		self.response.set_status(301)
+		self.redirect('/static/images/favicon.ico')
 
 class OtherPage(webapp.RequestHandler):
 	def get(self, page):
@@ -48,7 +48,7 @@ class OtherPage(webapp.RequestHandler):
 
 site = webapp.WSGIApplication([('/(index\.html)?', MainPage),
                                ('/robots.txt', RobotsTxt),
-                               #('/favicon.ico', FaviconHandler),
+                               ('/favicon.ico', FaviconHandler),
                                ('/(.*)', OtherPage)],
                               debug=True)
 
