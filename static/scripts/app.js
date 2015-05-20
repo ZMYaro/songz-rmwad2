@@ -43,9 +43,8 @@ function addPlaylistButton(listData) {
 
 /**
  * Handle a playlist button being pressed.
- * @param {MouseEvent} e
  */
-function handlePlaylistButtonClick(e) {
+function handlePlaylistButtonClick() {
 	document.getElementById('listTitle').innerText =
 		document.getElementById('listTitle').textContent = (this.innerText || this.textContent);
 	
