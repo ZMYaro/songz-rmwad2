@@ -1,9 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import logging
+
 import cgi
 import json
 import os
+import re
 
 from uuid import uuid4
 from datetime import datetime
@@ -15,9 +18,14 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 
 from models import Playlist, PlaylistUser, PlaylistItem
 
-def errorOut(response, code):
+EMAIL_REGEX = re.compile(r'[^@]+@[^@]+\.[^@]+')
+
+def errorOut(response, code, message=''):
 	response.headers['Content-Type'] = 'application/json'
-	response.out.write('[]')
+	response.out.write(json.dumps({
+		'code': code,
+		'message': message
+	}))
 	response.set_status(code)
 
 class PlaylistHandler(webapp.RequestHandler):
@@ -218,6 +226,62 @@ class UsersHandler(webapp.RequestHandler):
 		# Convert the list of dictionaries to JSON and output it.
 		self.response.headers['Content-Type'] = 'application/json'
 		self.response.out.write(json.dumps(usersData))
+	
+	def post(self):
+		""" Add a new song to a playlist. """
+		
+		# Ensure the necessary parameters were passed.
+		listId = self.request.get('list')
+		if not list:
+			errorOut(self.response, 400)
+			return
+		
+		userEmail = self.request.get('email')
+		if (not userEmail) or (not EMAIL_REGEX.match(userEmail)):
+			errorOut(self.response, 400, 'Please enter a properly-formed e-mail address.')
+			return
+		
+		# Ensure the user is signed in.
+		user = users.get_current_user()
+		if not user:
+			errorOut(self.response, 401)
+			return
+		
+		# Ensure the user has permission to edit the playlist.
+		playlistUserMap = PlaylistUser.gql('WHERE user = :1 AND playlistId = :2', user, listId).get()
+		if not playlistUserMap:
+			errorOut(self.response, 403)
+			return
+		
+		newUser = users.User(email=userEmail)
+		
+		
+		logging.info('--------')
+		logging.info(newUser)
+		
+		
+		# Ensure the user has not already been added.
+		playlistNewUserMap = PlaylistUser.gql('WHERE user = :1 AND playlistId = :2', newUser, listId).get()
+		if playlistNewUserMap:
+			logging.info(playlistNewUserMap)
+			errorOut(self.response, 400, 'That user already has access to this playlist.')
+			return
+		
+		# Create and store the user.
+		newPlaylistUser = PlaylistUser()
+		newPlaylistUser.user = newUser
+		newPlaylistUser.playlistId = listId
+		newPlaylistUser.isOwner = False
+		newPlaylistUser.put()
+		
+		# Output the playlist's metadata as JSON.
+		self.response.headers['Content-Type'] = 'application/json'
+		self.response.out.write(json.dumps({
+			'email': newPlaylistUser.user.email(),
+			'userId': newPlaylistUser.user.user_id(),
+			'isOwner': newPlaylistUser.isOwner,
+			'isYou': False
+		}))
 
 class OtherPage(webapp.RequestHandler):
 	def get(self):

@@ -1,8 +1,11 @@
 'use strict';
 
+var currentPlaylistId;
+
 function init() {
 	document.getElementById('newListButton').onclick = createPlaylist;
 	document.getElementById('newSongButton').onclick = addSong;
+	document.getElementById('newUserButton').onclick = addUser;
 	
 	loadLists();
 }
@@ -47,10 +50,11 @@ function handlePlaylistButtonClick(e) {
 		document.getElementById('listTitle').textContent = (this.innerText || this.textContent);
 	
 	document.getElementById('songList').innerHTML = '';
+	document.getElementById('userList').innerHTML = '';
 	
 	document.getElementById('songsPane').style.display = 'none';
 	document.getElementById('usersPane').style.display = 'none';
-	document.getElementById('newSongButton').dataset.playlistId = this.dataset.playlistId;
+	currentPlaylistId = this.dataset.playlistId;
 	
 	loadSongs(this.dataset.playlistId);
 	loadUsers(this.dataset.playlistId);
@@ -151,12 +155,28 @@ function addSong() {
 		return;
 	}
 	
-	var postData = 'list=' + this.dataset.playlistId +
+	var postData = 'list=' + currentPlaylistId +
 		'&title=' + encodeURIComponent(songTitle) +
 		'&artist=' + encodeURIComponent(songArtist) +
 		'&album=' + encodeURIComponent(songAlbum);
 	request('POST', '/api/songs', postData, addSongItem, function () {
 		alert('Your song could not be added.  Please try again later.');
+	});
+}
+
+/**
+ * Add a user to the current playlist when the button is clicked.
+ */
+function addUser() {
+	var userEmail = prompt('Please enter the e-mail address of the user with whom you would like to share the playlist.');
+	if (!userEmail) {
+		return;
+	}
+	
+	var postData = 'list=' + currentPlaylistId +
+		'&email=' + encodeURIComponent(userEmail);
+	request('POST', '/api/users', postData, addUserItem, function () {
+		alert('The user could not be added.  Please try again later.');
 	});
 }
 
