@@ -20,7 +20,11 @@ function request(method, url, postData, successCallback, failureCallback) {
 				}
 			} else {
 				if (failureCallback) {
-					failureCallback(xhr.status);
+					try {
+						failureCallback(JSON.parse(xhr.responseText));
+					} catch (e) {
+						failureCallback({code: xhr.status});
+					}
 				}
 			}
 		}

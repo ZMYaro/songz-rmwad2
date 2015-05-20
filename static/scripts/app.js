@@ -177,8 +177,8 @@ function addUser() {
 	
 	var postData = 'list=' + currentPlaylistId +
 		'&email=' + encodeURIComponent(userEmail);
-	request('POST', '/api/users', postData, addUserItem, function () {
-		alert('The user could not be added.  Please try again later.');
+	request('POST', '/api/users', postData, addUserItem, function (errData) {
+		alert(errData.message || 'The user could not be added.  Please try again later.');
 	});
 }
 
