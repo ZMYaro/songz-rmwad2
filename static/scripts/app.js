@@ -23,7 +23,7 @@ function populateListsPane(listsData) {
 }
 
 /**
- * Create a button in the list pane for a button.
+ * Create a button in the list pane for a playlist.
  * @param {Object} listData - The playlist's metadata
  */
 function addPlaylistButton(listData) {
@@ -66,12 +66,17 @@ function loadSongs(listId) {
 
 /**
  * Add a playlist's songs to the songs pane.
+ * @param {Array<Object>} songsData - The playlist's songs
  */
 function populateSongsPane(songsData) {
 	songsData.forEach(addSongItem);
 	document.getElementById('newSongButton').style.display = null;
 }
 
+/**
+ * Create a list item in the songs pane for a song.
+ * @param {Object} songData - The song's metadata
+ */
 function addSongItem(songData) {
 	var songList = document.getElementById('songList'),
 		listItem = document.createElement('li');
@@ -81,6 +86,23 @@ function addSongItem(songData) {
 	listItem.dataset.songId = songData.songId;
 	songList.appendChild(listItem);
 }
+
+/**
+ * Load a playlist's users and populate the users pane.
+ * @param {String} listId - The ID of the playlist
+ */
+function loadUsers(listId) {
+	request('GET', '/api/users?list=' + listId, null, populateUsersPane);
+}
+
+/**
+ * Add a playlist's users to the users pane.
+ * @param {Array<Object>} usersData - The playlist's users
+ */
+function populateUsersPane(usersData) {
+	// TODO: Implement this.
+}
+
 
 /**
  * Create a new playlist at the user's request.

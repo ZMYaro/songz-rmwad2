@@ -18,4 +18,4 @@ class PlaylistItem(ndb.Model):
 class PlaylistUser(ndb.Model):
 	playlistId = ndb.StringProperty()
 	user = ndb.UserProperty()
-	owner = ndb.BooleanProperty()
+	isOwner = ndb.BooleanProperty()

@@ -75,7 +75,7 @@ class PlaylistHandler(webapp.RequestHandler):
 		playlistUserMap = PlaylistUser()
 		playlistUserMap.playlistId = listId
 		playlistUserMap.user = user
-		playlistUserMap.owner = True
+		playlistUserMap.isOwner = True
 		playlistUserMap.put()
 		
 		# Output the playlist's metadata as JSON.
@@ -144,6 +144,7 @@ class SongHandler(webapp.RequestHandler):
 		songArtist = self.request.get('artist') or ''
 		songAlbum = self.request.get('album') or ''
 		
+		# Ensure the user is signed in.
 		user = users.get_current_user()
 		if not user:
 			errorOut(self.response, 401)
@@ -180,13 +181,50 @@ class SongHandler(webapp.RequestHandler):
 			'artist': songArtist,
 			'album': songAlbum
 		}))
+
+class UsersHandler(webapp.RequestHandler):
+	def get(self):
+		""" Get the users for a playlist. """
 		
+		# Ensure the list ID was passed.
+		listId = self.request.get('list')
+		if not list:
+			errorOut(self.response, 400)
+			return
+		
+		# Ensure the user is signed in.
+		user = users.get_current_user()
+		if not user:
+			errorOut(self.response, 401)
+			return
+		
+		# Ensure the user has permission to edit the playlist.
+		playlistUserMap = PlaylistUser.gql('WHERE user = :1 AND playlistId = :2', user, listId).get()
+		if not playlistUserMap:
+			errorOut(self.response, 403)
+			return
+		
+		# Get the list of playlist users.
+		playlistUsersMap = PlaylistUser.gql('WHERE playlistId = :1', listId).fetch(limit=None)
+		usersData = []
+		for playlistUser in playlistUsersMap:
+			usersData.append({
+				'email': playlistUser.user.email(),
+				'userId': playlistUser.user.user_id()
+				'isOwner': playlistUser.isOwner
+			})
+		
+		# Convert the list of dictionaries to JSON and output it.
+		self.response.headers['Content-Type'] = 'application/json'
+		self.response.out.write(json.dumps(usersData))
+
 class OtherPage(webapp.RequestHandler):
 	def get(self):
 		errorOut(self.response, 404)
 
 site = webapp.WSGIApplication([('/api/playlists', PlaylistHandler),
 							   ('/api/songs', SongHandler),
+							   ('/api/users', UsersHandler),
                                ('/.*', OtherPage)],
                               debug=True)
 
