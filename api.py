@@ -210,7 +210,7 @@ class UsersHandler(webapp.RequestHandler):
 		for playlistUser in playlistUsersMap:
 			usersData.append({
 				'email': playlistUser.user.email(),
-				'userId': playlistUser.user.user_id()
+				'userId': playlistUser.user.user_id(),
 				'isOwner': playlistUser.isOwner
 			})
 		
