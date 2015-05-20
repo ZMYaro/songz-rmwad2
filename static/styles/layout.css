@@ -23,6 +23,11 @@ body {
 	background-color: white;
 }
 
+button,
+*[role="button"] {
+	cursor: pointer;
+}
+
 .toolbar > button > img,
 .toolbar > *[role="button"] > img {
 	width: 32px;
