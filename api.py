@@ -211,7 +211,8 @@ class UsersHandler(webapp.RequestHandler):
 			usersData.append({
 				'email': playlistUser.user.email(),
 				'userId': playlistUser.user.user_id(),
-				'isOwner': playlistUser.isOwner
+				'isOwner': playlistUser.isOwner,
+				'isYou': playlistUser.user == user
 			})
 		
 		# Convert the list of dictionaries to JSON and output it.

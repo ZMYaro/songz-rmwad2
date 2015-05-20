@@ -102,10 +102,23 @@ function loadUsers(listId) {
  * @param {Array<Object>} usersData - The playlist's users
  */
 function populateUsersPane(usersData) {
-	// TODO: Implement this.
+	usersData.forEach(addUserItem);
 	document.getElementById('usersPane').style.display = null;
 }
 
+/**
+ * Create a list item in the users pane for a user.
+ * @param {Object} userData - The user's metadata
+ */
+function addUserItem(userData) {
+	var userList = document.getElementById('userList'),
+		listItem = document.createElement('li');
+	listItem.innerText = listItem.textContent =
+		userData.email + (userData.isYou ? ' (You)' : '');
+	listItem.id = 'user-' + userData.userId;
+	listItem.dataset.email = userData.email;
+	userList.appendChild(listItem);
+}
 
 /**
  * Create a new playlist at the user's request.
