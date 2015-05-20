@@ -87,7 +87,9 @@ function addSongItem(songData) {
 	var songList = document.getElementById('songList'),
 		listItem = document.createElement('li');
 	listItem.innerText = listItem.textContent =
-		songData.title + ' - ' + songData.artist + ' - ' + songData.album;
+		songData.title + 
+		(songData.artist ? (' - ' + songData.artist) : '') +
+		(songData.album ? (' - ' + songData.album) : '');
 	listItem.id = 'song-' + songData.songId;
 	listItem.dataset.songId = songData.songId;
 	songList.appendChild(listItem);
